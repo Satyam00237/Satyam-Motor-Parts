@@ -84,13 +84,13 @@ const Home = () => {
         else navigate('/admin/products');
     };
 
-    const getDashboardRoute = () => {
-        if (!user) return '/login';
-        if (user.role === 'admin') return '/admin/dashboard';
-        if (user.role === 'owner') return '/owner/dashboard';
-        return '/customer/products';
+    // const getDashboardRoute = () => {
+    //     if (!user) return '/login';
+    //     if (user.role === 'admin') return '/admin/dashboard';
+    //     if (user.role === 'owner') return '/owner/dashboard';
+    //     return '/customer/products';
 
-    };
+    // };
 
     const getProductsRoute = (categoryParam) => {
         if (!user) return '/login';

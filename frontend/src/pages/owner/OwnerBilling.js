@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import OwnerLayout from '../../components/OwnerLayout';
 import api from '../../services/api';
-import { FiSearch, FiShoppingCart, FiPlus, FiMinus, FiTrash2, FiUser, FiPhone, FiCheckCircle } from 'react-icons/fi';
+import { FiSearch, FiShoppingCart, FiPlus, FiMinus, FiTrash2, FiUser, FiCheckCircle } from 'react-icons/fi';
 
 const OwnerBilling = () => {
     const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
+    // const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [cart, setCart] = useState([]);
     const [guestInfo, setGuestInfo] = useState({ name: '', phone: '' });
@@ -18,8 +18,8 @@ const OwnerBilling = () => {
     useEffect(() => {
         api.get('/products')
             .then(r => setProducts(r.data))
-            .catch(console.error)
-            .finally(() => setLoading(false));
+            .catch(console.error);
+        // .finally(() => setLoading(false));
     }, []);
 
     const categories = ['All', 'Engine Parts', 'Brakes', 'Electrical', 'Body Parts', 'Tyres', 'Oils & Lubricants', 'Accessories', 'Other'];
