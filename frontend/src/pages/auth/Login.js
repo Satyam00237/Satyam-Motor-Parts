@@ -19,7 +19,7 @@ const Login = () => {
         setError('');
         setLoading(true);
         try {
-            const { data } = await api.post('/auth/login', form);
+            const { data } = await api.post('https://satyam-motor-parts.vercel.app/auth/login', form);
             login(data);
             if (data.role === 'admin') navigate('/admin/dashboard');
             else if (data.role === 'owner') navigate('/owner/dashboard');
