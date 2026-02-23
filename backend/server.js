@@ -19,7 +19,7 @@ const app = express();
 
 // Middleware — allow all origins in development
 app.use(cors({
-    origin: '*',
+    origin: 'https://satyam-motor-parts-6gpb.vercel.app',
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
