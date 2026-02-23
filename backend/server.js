@@ -7,10 +7,12 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 connectDB();
 
-// Create uploads folder if not exists
-const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
+// Create uploads folder if not exists (Skip on Vercel as it's read-only)
+if (!process.env.VERCEL) {
+    const uploadDir = path.join(__dirname, 'uploads');
+    if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir);
+    }
 }
 
 const app = express();

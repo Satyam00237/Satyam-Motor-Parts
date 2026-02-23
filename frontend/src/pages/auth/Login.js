@@ -93,8 +93,7 @@ const Login = () => {
                 {/* Demo credentials hint */}
                 <div style={{ marginTop: 20, padding: '12px', background: 'var(--bg-card2)', borderRadius: 8, fontSize: 12, color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
                     <div style={{ fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 4 }}>🔑 Demo Credentials</div>
-                    <div>Owner: owner@satyam.com / Owner@123</div>
-                    <div>Admin: admin@satyam.com / Admin@123</div>
+
                 </div>
             </div>
         </div>
