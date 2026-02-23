@@ -19,7 +19,7 @@ const Login = () => {
         setError('');
         setLoading(true);
         try {
-            const { data } = await api.post('/auth/login', form);
+            const { data } = await api.post(`${process.env.SERVER_URL}`, form);
             login(data);
             if (data.role === 'admin') navigate('/admin/dashboard');
             else if (data.role === 'owner') navigate('/owner/dashboard');
@@ -90,11 +90,7 @@ const Login = () => {
                 <div className="auth-footer">
                     Don't have an account? <Link to="/register">Register here</Link>
                 </div>
-                {/* Demo credentials hint */}
-                <div style={{ marginTop: 20, padding: '12px', background: 'var(--bg-card2)', borderRadius: 8, fontSize: 12, color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
-                    <div style={{ fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 4 }}>🔑 Demo Credentials</div>
 
-                </div>
             </div>
         </div>
     );
