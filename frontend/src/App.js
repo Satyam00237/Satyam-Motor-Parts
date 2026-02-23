@@ -65,11 +65,11 @@ function App() {
 
             {/* Admin Routes */}
 
-            <Route path="/admin/dashboard" element={<ProtectedRoute roles={['admin']}><AdminDashboard /></ProtectedRoute>} />
+            {/* <Route path="/admin/dashboard" element={<ProtectedRoute roles={['admin']}><AdminDashboard /></ProtectedRoute>} />
             <Route path="/admin/users" element={<ProtectedRoute roles={['admin']}><AdminUsers /></ProtectedRoute>} />
             <Route path="/admin/products" element={<ProtectedRoute roles={['admin']}><AdminProducts /></ProtectedRoute>} />
             <Route path="/admin/bookings" element={<ProtectedRoute roles={['admin']}><AdminBookings /></ProtectedRoute>} />
-            <Route path="/admin/enquiries" element={<ProtectedRoute roles={['admin']}><AdminEnquiries /></ProtectedRoute>} />
+            <Route path="/admin/enquiries" element={<ProtectedRoute roles={['admin']}><AdminEnquiries /></ProtectedRoute>} /> */}
 
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/login" replace />} />
