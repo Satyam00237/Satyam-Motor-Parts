@@ -31,11 +31,11 @@ import OwnerBilling from './pages/owner/OwnerBilling';
 
 
 // Admin pages
-// import AdminDashboard from './pages/admin/AdminDashboard';
-// import AdminUsers from './pages/admin/AdminUsers';
-// import AdminProducts from './pages/admin/AdminProducts';
-// import AdminBookings from './pages/admin/AdminBookings';
-// import AdminEnquiries from './pages/admin/AdminEnquiries';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminProducts from './pages/admin/AdminProducts';
+import AdminBookings from './pages/admin/AdminBookings';
+import AdminEnquiries from './pages/admin/AdminEnquiries';
 
 function App() {
   return (
