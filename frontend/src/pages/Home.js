@@ -134,7 +134,7 @@ const Home = () => {
         <div className="home-page">
             {/* ── Topbar ── */}
             <div className="home-topbar">
-                <span>📞 Call Us On: <strong>+91 9339332933</strong></span>
+                <span>📞 Call Us On: <strong>+91 7257008160</strong></span>
                 <span>🚚 Free Delivery on orders above ₹499</span>
                 <span>⭐ India's Biggest Auto Parts Marketplace</span>
             </div>
@@ -415,7 +415,7 @@ const Home = () => {
                     <div className="footer-col footer-brand">
                         <div className="footer-logo">🔧 Satyam Motor Parts</div>
                         <p>India's trusted marketplace for genuine auto parts. Quality products, best prices, fastest delivery.</p>
-                        <div className="footer-contact">📞 +91 9339332933</div>
+                        <div className="footer-contact">📞 +91 7257008160</div>
                         <div className="footer-socials">
                             <button className="footer-social-btn">📘</button><button className="footer-social-btn">📸</button><button className="footer-social-btn">🐦</button><button className="footer-social-btn">▶</button>
                         </div>

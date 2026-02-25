@@ -45,7 +45,7 @@ const CustomerLayout = ({ children }) => {
         <div className="cl-page">
             {/* ── Topbar ── */}
             <div className="cl-topbar">
-                <span>📞 +91 9339332933</span>
+                <span>📞 +91 7257008160</span>
                 <span>🚚 Free Delivery on orders above ₹499</span>
                 <span>⭐ Genuine Parts • Best Rates</span>
             </div>
@@ -135,7 +135,7 @@ const CustomerLayout = ({ children }) => {
                     <div className="cl-footer-col">
                         <div className="cl-footer-logo">🔧 Satyam Motor Parts</div>
                         <p>India's trusted marketplace for genuine auto parts. Quality products, best prices.</p>
-                        <div className="cl-footer-phone">📞 +91 9339332933</div>
+                        <div className="cl-footer-phone">📞 +91 7257008160</div>
                     </div>
                     <div className="cl-footer-col">
                         <h4>Quick Links</h4>
