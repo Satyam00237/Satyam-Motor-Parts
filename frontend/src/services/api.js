@@ -5,6 +5,8 @@ const api = axios.create({
     headers: { 'Content-Type': 'application/json' },
 });
 
+console.log(`[ApiDebug] Base URL: ${api.defaults.baseURL}`);
+
 // Attach JWT token to every request
 api.interceptors.request.use((config) => {
     const stored = localStorage.getItem('satyam_user');

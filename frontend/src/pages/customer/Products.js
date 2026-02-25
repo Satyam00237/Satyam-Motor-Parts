@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import CustomerLayout from '../../components/CustomerLayout';
 import { useCart } from '../../context/CartContext';
@@ -67,7 +68,7 @@ const Products = () => {
                 if (sort === 'name') sorted.sort((a, b) => a.name.localeCompare(b.name));
                 setProducts(sorted);
             } catch (err) {
-                if (err.name !== 'AbortError') console.error(err);
+                if (!axios.isCancel(err)) console.error(err);
             } finally {
                 setLoading(false);
             }
