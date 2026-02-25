@@ -373,46 +373,6 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* ── App Download Banner ── */}
-            <section className="app-banner-section">
-                <div className="section-inner">
-                    <div className="app-banner">
-                        <div className="app-banner-left">
-                            <h2 className="app-title">Download Satyam Motor Parts App</h2>
-                            <p className="app-sub">Choose and book a seamless car service experience and also get exciting offers with our app</p>
-                            <div className="app-badges">
-                                <div className="store-badge">
-                                    <span>▶</span>
-                                    <div>
-                                        <small>Get it on</small>
-                                        <strong>Google Play</strong>
-                                    </div>
-                                </div>
-                                <div className="store-badge">
-                                    <span></span>
-                                    <div>
-                                        <small>Download on</small>
-                                        <strong>App Store</strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="app-banner-right">
-                            <div className="phone-mockup">
-                                <div className="phone-screen">
-                                    <div className="phone-header">🔧 Satyam Motor</div>
-                                    <div className="phone-content">
-                                        <div className="phone-item">🛞 Tyre Shine — ₹675</div>
-                                        <div className="phone-item">🛢️ Engine Oil — ₹459</div>
-                                        <div className="phone-item active-item">✨ Dressing Compound — ₹900</div>
-                                    </div>
-                                    <div className="phone-btn">Book Service →</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             {/* ── Become a Seller ── */}
             {!user && (
