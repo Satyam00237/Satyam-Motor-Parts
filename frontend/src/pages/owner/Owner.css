@@ -434,3 +434,42 @@
     background: rgba(79, 70, 229, 0.1);
     color: #4f46e5;
 }
+
+/* ── Responsiveness ── */
+.sidebar-toggle {
+    display: none !important;
+}
+
+.sidebar-overlay {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    .sidebar-toggle {
+        display: block !important;
+    }
+
+    .sidebar-overlay {
+        display: block !important;
+    }
+
+    .sidebar-aside {
+        transform: translateX(-100%);
+    }
+
+    .sidebar-aside.open {
+        transform: translateX(0);
+    }
+
+    .dashboard-main-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .billing-main-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .billing-main-grid>div:last-child {
+        position: static !important;
+    }
+}

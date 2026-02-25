@@ -45,7 +45,9 @@ const OwnerBilling = () => {
 
     const removeFromCart = (id) => setCart(cart.filter(item => item._id !== id));
 
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const gst = subtotal * 0.18;
+    const finalTotal = subtotal + gst;
 
     const handleCheckout = async () => {
         if (cart.length === 0) return alert('Add items to cart first');
@@ -58,7 +60,7 @@ const OwnerBilling = () => {
                     quantity: item.quantity,
                     price: item.price
                 })),
-                totalAmount: total,
+                totalAmount: finalTotal,
                 paymentMethod,
                 guestInfo
             };
@@ -101,7 +103,7 @@ const OwnerBilling = () => {
             subtitle="Create quick bills for offline customers"
             backTo="/owner/dashboard"
         >
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 24, alignItems: 'start' }}>
+            <div className="billing-main-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 24, alignItems: 'start' }}>
 
                 {/* Product Section */}
                 <div className="ol-card">
@@ -249,11 +251,15 @@ const OwnerBilling = () => {
                         <div style={{ background: '#f8f8f8', borderRadius: 12, padding: 16, marginBottom: 20 }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                                 <span style={{ color: '#666', fontSize: 14 }}>Subtotal</span>
-                                <span style={{ fontWeight: 600 }}>₹{total.toLocaleString('en-IN')}</span>
+                                <span style={{ fontWeight: 600 }}>₹{subtotal.toLocaleString('en-IN')}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                                <span style={{ color: '#666', fontSize: 14 }}>GST (18%)</span>
+                                <span style={{ fontWeight: 600 }}>₹{gst.toLocaleString('en-IN')}</span>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #ddd', paddingTop: 8 }}>
                                 <span style={{ fontWeight: 800, fontSize: 18 }}>Total Bill</span>
-                                <span style={{ fontWeight: 800, fontSize: 18, color: '#ff6b35' }}>₹{total.toLocaleString('en-IN')}</span>
+                                <span style={{ fontWeight: 800, fontSize: 18, color: '#ff6b35' }}>₹{finalTotal.toLocaleString('en-IN')}</span>
                             </div>
                         </div>
 

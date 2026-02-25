@@ -64,7 +64,7 @@ const OwnerDashboard = () => {
                         </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 24, marginBottom: 24 }}>
+                    <div className="dashboard-main-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 24, marginBottom: 24 }}>
                         {/* Sales Chart */}
                         <div className="ol-card">
                             <h3 className="ol-card-title"><FiTrendingUp /> Sales Trend (Last 7 Days)</h3>

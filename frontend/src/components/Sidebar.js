@@ -53,7 +53,7 @@ const Sidebar = () => {
             <button
                 onClick={() => setOpen(!open)}
                 style={{
-                    display: 'none', position: 'fixed', top: 16, left: 16, zIndex: 1100,
+                    position: 'fixed', top: 16, left: 16, zIndex: 1100,
                     background: '#1a1a2e', border: 'none',
                     color: '#fff', borderRadius: '8px', padding: '10px',
                     cursor: 'pointer', fontSize: '20px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
@@ -68,24 +68,28 @@ const Sidebar = () => {
                     onClick={() => setOpen(false)}
                     style={{
                         position: 'fixed', inset: 0, background: 'rgba(26,26,46,0.5)',
-                        zIndex: 999, display: 'none', backdropFilter: 'blur(4px)'
+                        zIndex: 999, backdropFilter: 'blur(4px)'
                     }}
                     className="sidebar-overlay"
                 />
             )}
 
-            <aside style={{
-                width: 260,
-                background: '#1a1a2e',
-                borderRight: '1px solid rgba(255,255,255,0.05)',
-                display: 'flex',
-                flexDirection: 'column',
-                position: 'fixed',
-                top: 0, left: 0, bottom: 0,
-                zIndex: 1000,
-                transition: 'transform 0.3s',
-                fontFamily: "'Poppins', sans-serif"
-            }}>
+            <aside
+                className={`sidebar-aside ${open ? 'open' : ''}`}
+                style={{
+                    width: 260,
+                    background: '#1a1a2e',
+                    borderRight: '1px solid rgba(255,255,255,0.05)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    position: 'fixed',
+                    top: 0, left: 0, bottom: 0,
+                    zIndex: 1000,
+                    transition: 'transform 0.3s',
+                    fontFamily: "'Poppins', sans-serif",
+                    transform: open ? 'translateX(0)' : undefined
+                }}
+            >
                 {/* Logo */}
                 <div style={{
                     padding: '24px 20px',
