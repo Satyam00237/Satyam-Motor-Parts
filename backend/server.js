@@ -18,11 +18,27 @@ if (!process.env.VERCEL) {
 const app = express();
 
 // Middleware — allow all origins in development
+const allowedOrigins = [
+    'https://satyam-motor-parts.vercel.app',
+    'https://satyam-motor-parts-6gpb.vercel.app',
+    'http://localhost:3000'
+];
+
 app.use(cors({
-    origin: ['https://satyam-motor-parts.vercel.app', 'https://satyam-motor-parts-6gpb.vercel.app', 'http://localhost:3000'],
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
