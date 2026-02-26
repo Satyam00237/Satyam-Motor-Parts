@@ -120,7 +120,12 @@ const Cart = () => {
                                     <div key={item._id} className="cart-item">
                                         <div className="cart-item-info">
                                             <div className="cart-item-img">
-                                                {item.image ? <img src={item.image} alt={item.name} /> : '⚙️'}
+                                                {item.image ? (
+                                                    <img
+                                                        src={item.image.startsWith('/') ? `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${item.image}` : item.image}
+                                                        alt={item.name}
+                                                    />
+                                                ) : '⚙️'}
                                             </div>
                                             <div>
                                                 <div className="cart-item-name">{item.name}</div>
