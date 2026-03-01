@@ -24,7 +24,7 @@ const Register = () => {
         try {
             const { data } = await api.post('/auth/register', form);
             login(data);
-            navigate('/customer/dashboard');
+            navigate('/');
         } catch (err) {
             setError(err.response?.data?.message || 'Registration failed. Please try again.');
         } finally {

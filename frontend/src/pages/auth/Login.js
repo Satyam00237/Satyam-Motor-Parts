@@ -23,7 +23,7 @@ const Login = () => {
             login(data);
             if (data.role === 'admin') navigate('/admin/dashboard');
             else if (data.role === 'owner') navigate('/owner/dashboard');
-            else navigate('/customer/products');
+            else navigate('/');
 
         } catch (err) {
             setError(err.response?.data?.message || 'Login failed. Please try again.');
