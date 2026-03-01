@@ -44,8 +44,7 @@ const Sidebar = () => {
         navigate('/login');
     };
 
-    const roleColors = { customer: '#3b82f6', owner: '#f97316', admin: '#10b981' };
-    const roleColor = roleColors[user?.role] || '#f97316';
+
 
     return (
         <>
