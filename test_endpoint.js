@@ -1,16 +1,14 @@
-const http = require('http');
+const https = require('https');
 
 const data = JSON.stringify({
-    items: [],
-    shippingAddress: {},
-    paymentMethod: 'COD',
-    totalAmount: 0
+    email: 'test@test.com',
+    password: 'password'
 });
 
 const options = {
-    hostname: 'localhost',
-    port: 5000,
-    path: '/api/orders',
+    hostname: 'satyam-motor-parts.vercel.app',
+    port: 443,
+    path: '/api/auth/login',
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
@@ -18,16 +16,19 @@ const options = {
     }
 };
 
-const req = http.request(options, (res) => {
-    console.log(`STATUS: ${res.statusCode}`);
-    res.setEncoding('utf8');
-    res.on('data', (chunk) => {
-        console.log(`BODY: ${chunk}`);
+const req = https.request(options, res => {
+    console.log(`statusCode: ${res.statusCode}`);
+    let body = '';
+    res.on('data', d => {
+        body += d;
+    });
+    res.on('end', () => {
+        console.log(body);
     });
 });
 
-req.on('error', (e) => {
-    console.error(`problem with request: ${e.message}`);
+req.on('error', error => {
+    console.error(error);
 });
 
 req.write(data);
