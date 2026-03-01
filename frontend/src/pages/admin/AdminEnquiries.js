@@ -26,9 +26,10 @@ const AdminEnquiries = () => {
         e.preventDefault();
         setSaving(true);
         try {
-            const { data } = await api.patch(`/enquiries/${selected._id}`, { reply, status: 'replied' });
+            const { data } = await api.post(`/enquiries/${selected._id}/reply`, { content: reply });
             setEnquiries(enquiries.map(e => e._id === selected._id ? data : e));
-            setSelected(null); setReply('');
+            setSelected(data); // Keep modal open with updated data
+            setReply('');
         } catch (err) { alert('Failed to send reply'); }
         finally { setSaving(false); }
     };
@@ -52,25 +53,25 @@ const AdminEnquiries = () => {
                                     <tr><th>#</th><th>Customer</th><th>Type</th><th>Subject</th><th>Status</th><th>Date</th><th>Actions</th></tr>
                                 </thead>
                                 <tbody>
-                                    {enquiries.map((e, i) => (
+                                    {enquiries.filter(e => e.status !== 'closed').map((e, i) => (
                                         <tr key={e._id}>
                                             <td style={{ color: 'var(--text-muted)' }}>{i + 1}</td>
                                             <td>
                                                 <div style={{ fontWeight: 600 }}>{e.customer?.name}</div>
                                                 <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{e.customer?.email}</div>
                                             </td>
-                                            <td><span className="badge badge-confirmed">{e.type}</span></td>
+                                            <td><span className={`badge badge-${e.type || 'general'}`}>{e.type || 'general'}</span></td>
                                             <td>
                                                 <div style={{ fontWeight: 500 }}>{e.subject}</div>
-                                                <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{e.message.slice(0, 60)}{e.message.length > 60 ? '...' : ''}</div>
+                                                <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                                                    {e.messages?.[e.messages.length - 1]?.content.slice(0, 60) || e.message.slice(0, 60)}...
+                                                </div>
                                             </td>
-                                            <td><span className={`badge badge-${e.status}`}>{e.status}</span></td>
+                                            <td><span className={`badge badge-${e.status || 'open'}`}>{e.status || 'open'}</span></td>
                                             <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{new Date(e.createdAt).toLocaleDateString('en-IN')}</td>
                                             <td>
                                                 <div style={{ display: 'flex', gap: 6 }}>
-                                                    {e.status !== 'closed' && (
-                                                        <button className="btn btn-primary btn-sm" onClick={() => { setSelected(e); setReply(e.reply || ''); }}>Reply</button>
-                                                    )}
+                                                    <button className="btn btn-primary btn-sm" onClick={() => { setSelected(e); setReply(''); }}>View & Reply</button>
                                                     <button className="btn btn-danger btn-sm" onClick={() => handleDelete(e._id)}><FiTrash2 /></button>
                                                 </div>
                                             </td>
@@ -84,24 +85,62 @@ const AdminEnquiries = () => {
 
                 {selected && (
                     <div className="modal-overlay" onClick={() => setSelected(null)}>
-                        <div className="modal" onClick={ev => ev.stopPropagation()}>
+                        <div className="modal" style={{ width: '100%', maxWidth: 600 }} onClick={ev => ev.stopPropagation()}>
                             <div className="modal-header">
-                                <h2>Reply to Enquiry</h2>
+                                <h2>Enquiry Thread</h2>
                                 <button className="modal-close" onClick={() => setSelected(null)}><FiX /></button>
                             </div>
                             <div style={{ marginBottom: 16, padding: '12px 14px', background: 'var(--bg-card2)', borderRadius: 8 }}>
                                 <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 4 }}>From: {selected.customer?.name} ({selected.customer?.email})</div>
                                 <div style={{ fontWeight: 600, marginBottom: 6 }}>{selected.subject}</div>
-                                <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{selected.message}</div>
                             </div>
+
+                            {/* Conversation Thread */}
+                            <div className="enquiry-thread" style={{
+                                maxHeight: 300,
+                                overflowY: 'auto',
+                                padding: 10,
+                                background: '#f9f9f9',
+                                border: '1px solid #eee',
+                                borderRadius: 8,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 12,
+                                marginBottom: 16
+                            }}>
+                                {(selected.messages && selected.messages.length > 0 ? selected.messages : [{ sender: selected.customer, content: selected.message, createdAt: selected.createdAt }]).map((msg, idx) => {
+                                    const isOwner = msg.sender?.role === 'owner' || msg.sender?.role === 'admin' || (typeof msg.sender === 'object' && msg.sender?.name === 'Owner'); // Fallback logic
+                                    return (
+                                        <div key={idx} style={{
+                                            alignSelf: isOwner ? 'flex-end' : 'flex-start',
+                                            maxWidth: '85%',
+                                            padding: '10px 14px',
+                                            borderRadius: 12,
+                                            fontSize: '13px',
+                                            background: isOwner ? '#fff4ef' : '#fff',
+                                            border: isOwner ? '1px solid #ff6b35' : '1px solid #ddd',
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                                        }}>
+                                            <div style={{ fontWeight: 700, fontSize: '11px', marginBottom: 4, color: isOwner ? '#ff6b35' : '#1a1a2e' }}>
+                                                {isOwner ? 'You (Owner)' : (msg.sender?.name || 'Customer')}
+                                            </div>
+                                            <div style={{ color: '#444', lineHeight: 1.5 }}>{msg.content}</div>
+                                            <div style={{ fontSize: '10px', color: '#999', textAlign: 'right', marginTop: 4 }}>
+                                                {new Date(msg.createdAt).toLocaleString('en-IN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' })}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
                             <form onSubmit={handleReply}>
                                 <div className="form-group">
-                                    <label>Your Reply</label>
-                                    <textarea className="textarea" style={{ minHeight: 120 }} value={reply} onChange={e => setReply(e.target.value)} placeholder="Write your reply..." required />
+                                    <label>Add a Message</label>
+                                    <textarea className="textarea" style={{ minHeight: 80 }} value={reply} onChange={e => setReply(e.target.value)} placeholder="Type your response here..." required />
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
-                                    <button type="button" className="btn btn-outline" onClick={() => setSelected(null)}>Cancel</button>
-                                    <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Sending...' : '📨 Send Reply'}</button>
+                                    <button type="button" className="btn btn-outline" onClick={() => setSelected(null)}>Close</button>
+                                    <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Sending...' : '📨 Send message'}</button>
                                 </div>
                             </form>
                         </div>

@@ -11,8 +11,12 @@ const serviceTypes = [
 ];
 
 const timeSlots = [
-    '9:00 AM – 11:00 AM', '11:00 AM – 1:00 PM',
-    '1:00 PM – 3:00 PM', '3:00 PM – 5:00 PM', '5:00 PM – 7:00 PM',
+    '09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM',
+    '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM',
+    '01:00 PM', '01:30 PM', '02:00 PM', '02:30 PM',
+    '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM',
+    '05:00 PM', '05:30 PM', '06:00 PM', '06:30 PM',
+    '07:00 PM'
 ];
 
 const BookService = () => {
@@ -25,8 +29,30 @@ const BookService = () => {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState('');
+    const [bookedSlots, setBookedSlots] = useState([]);
+    const [fetchingSlots, setFetchingSlots] = useState(false);
 
-    const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+    const fetchBookedSlots = async (date) => {
+        if (!date) return;
+        setFetchingSlots(true);
+        try {
+            const res = await api.get(`/bookings/booked-slots?date=${date}`);
+            setBookedSlots(res.data);
+        } catch (err) {
+            console.error('Failed to fetch booked slots', err);
+        } finally {
+            setFetchingSlots(false);
+        }
+    };
+
+    const handleChange = e => {
+        const { name, value } = e.target;
+        setForm({ ...form, [name]: value });
+        if (name === 'serviceDate') {
+            fetchBookedSlots(value);
+            setForm(prev => ({ ...prev, timeSlot: '' })); // Reset slot when date changes
+        }
+    };
 
     const handleSubmit = async e => {
         e.preventDefault();
@@ -128,18 +154,28 @@ const BookService = () => {
                                         />
                                     </div>
 
-                                    <div className="cb-field">
-                                        <label className="cb-label">Time Slot *</label>
-                                        <select
-                                            className="cb-select"
-                                            name="timeSlot"
-                                            value={form.timeSlot}
-                                            onChange={handleChange}
-                                            required
-                                        >
-                                            <option value="">Select time slot</option>
-                                            {timeSlots.map(t => <option key={t}>{t}</option>)}
-                                        </select>
+                                    <div className="cb-field full">
+                                        <label className="cb-label">Select Time Slot * {fetchingSlots && ' (Checking...)'}</label>
+                                        <div className="slot-grid">
+                                            {timeSlots.map(t => {
+                                                const isBooked = bookedSlots.includes(t);
+                                                return (
+                                                    <button
+                                                        key={t}
+                                                        type="button"
+                                                        className={`slot-btn ${form.timeSlot === t ? 'active' : ''} ${isBooked ? 'booked' : 'available'}`}
+                                                        onClick={() => !isBooked && setForm({ ...form, timeSlot: t })}
+                                                        disabled={isBooked || fetchingSlots}
+                                                        title={isBooked ? "Already booked" : !form.serviceDate ? "Select a date first" : ""}
+                                                    >
+                                                        {t}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                        {!form.serviceDate && <p className="slot-hint" style={{ color: '#f59e0b' }}>⚠️ Please select a date first to see available slots.</p>}
+                                        {form.serviceDate && bookedSlots.length > 0 && <p className="slot-hint">ℹ️ Slots in red are already booked.</p>}
+                                        {form.serviceDate && bookedSlots.length === 0 && !fetchingSlots && <p className="slot-hint" style={{ color: '#10b981' }}>✅ All slots are available for this date.</p>}
                                     </div>
 
                                     <div className="cb-field full">

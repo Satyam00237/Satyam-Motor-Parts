@@ -109,7 +109,11 @@ const OwnerBookings = () => {
                                                 value={b.status}
                                                 onChange={e => handleStatus(b._id, e.target.value)}
                                             >
-                                                {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                                                {STATUSES.map(s => (
+                                                    <option key={s} value={s}>
+                                                        {s === 'approved' ? 'Approved' : s.charAt(0).toUpperCase() + s.slice(1)}
+                                                    </option>
+                                                ))}
                                             </select>
                                         </td>
                                     </tr>

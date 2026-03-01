@@ -40,9 +40,10 @@ const getProductById = async (req, res) => {
 // @access Private (Owner, Admin)
 const createProduct = async (req, res) => {
     try {
-        const { name, description, category, price, stock, image } = req.body;
+        const { name, description, category, price, stock, image, discountPercentage } = req.body;
         const product = await Product.create({
             name, description, category, price, stock, image,
+            discountPercentage: discountPercentage || 0,
             addedBy: req.user._id,
         });
         res.status(201).json(product);
@@ -59,7 +60,7 @@ const updateProduct = async (req, res) => {
         const product = await Product.findById(req.params.id);
         if (!product) return res.status(404).json({ message: 'Product not found' });
 
-        const { name, description, category, price, stock, image, available } = req.body;
+        const { name, description, category, price, stock, image, available, discountPercentage } = req.body;
         product.name = name ?? product.name;
         product.description = description ?? product.description;
         product.category = category ?? product.category;
@@ -67,6 +68,7 @@ const updateProduct = async (req, res) => {
         product.stock = stock ?? product.stock;
         product.image = image ?? product.image;
         product.available = available ?? product.available;
+        product.discountPercentage = discountPercentage ?? product.discountPercentage;
 
         const updated = await product.save();
         res.json(updated);

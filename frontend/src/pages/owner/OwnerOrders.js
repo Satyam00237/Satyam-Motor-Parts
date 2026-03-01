@@ -18,11 +18,18 @@ const OwnerOrders = () => {
     }, []);
 
     const handleStatus = async (id, status) => {
+        // Optimistic UI Update
+        const originalOrders = [...orders];
+        setOrders(orders.map(o => o._id === id ? { ...o, status } : o));
+
         try {
             const { data } = await api.patch(`/orders/${id}/status`, { status });
-            setOrders(orders.map(o => o._id === id ? data : o));
+            // Sync with server data (in case there are other updates or populations)
+            setOrders(prev => prev.map(o => o._id === id ? data : o));
         } catch (err) {
             console.error('Order status update failed:', err);
+            // Rollback on error
+            setOrders(originalOrders);
             alert(err.response?.data?.message || 'Failed to update status. Check console for details.');
         }
     };

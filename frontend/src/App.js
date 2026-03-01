@@ -18,6 +18,8 @@ import BookService from './pages/customer/BookService';
 import BookingHistory from './pages/customer/BookingHistory';
 import Enquiry from './pages/customer/Enquiry';
 import Cart from './pages/customer/Cart';
+import Profile from './pages/customer/Profile';
+import Policies from './pages/customer/Policies';
 
 
 // Owner pages
@@ -30,12 +32,7 @@ import OwnerBilling from './pages/owner/OwnerBilling';
 
 
 
-// Admin pages
-import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminUsers from './pages/admin/AdminUsers';
-import AdminProducts from './pages/admin/AdminProducts';
-import AdminBookings from './pages/admin/AdminBookings';
-import AdminEnquiries from './pages/admin/AdminEnquiries';
+// Admin pages - Imports removed to fix ESLint warnings as routes are inactive
 
 function App() {
   return (
@@ -47,6 +44,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/policy/:type" element={<Policies />} />
 
             {/* Customer Routes */}
             <Route path="/customer/products" element={<ProtectedRoute roles={['customer']}><Products /></ProtectedRoute>} />
@@ -54,6 +52,8 @@ function App() {
             <Route path="/customer/history" element={<ProtectedRoute roles={['customer']}><BookingHistory /></ProtectedRoute>} />
             <Route path="/customer/enquiry" element={<ProtectedRoute roles={['customer']}><Enquiry /></ProtectedRoute>} />
             <Route path="/customer/cart" element={<ProtectedRoute roles={['customer']}><Cart /></ProtectedRoute>} />
+            <Route path="/customer/profile" element={<ProtectedRoute roles={['customer']}><Profile /></ProtectedRoute>} />
+
 
             {/* Owner Routes */}
             <Route path="/owner/dashboard" element={<ProtectedRoute roles={['owner']}><OwnerDashboard /></ProtectedRoute>} />
@@ -63,13 +63,7 @@ function App() {
             <Route path="/owner/billing" element={<ProtectedRoute roles={['owner']}><OwnerBilling /></ProtectedRoute>} />
             <Route path="/owner/enquiries" element={<ProtectedRoute roles={['owner']}><OwnerEnquiries /></ProtectedRoute>} />
 
-            {/* Admin Routes */}
-
-            <Route path="/admin/dashboard" element={<ProtectedRoute roles={['admin']}><AdminDashboard /></ProtectedRoute>} />
-            <Route path="/admin/users" element={<ProtectedRoute roles={['admin']}><AdminUsers /></ProtectedRoute>} />
-            <Route path="/admin/products" element={<ProtectedRoute roles={['admin']}><AdminProducts /></ProtectedRoute>} />
-            <Route path="/admin/bookings" element={<ProtectedRoute roles={['admin']}><AdminBookings /></ProtectedRoute>} />
-            <Route path="/admin/enquiries" element={<ProtectedRoute roles={['admin']}><AdminEnquiries /></ProtectedRoute>} />
+            {/* Admin Routes - Commented out to fix ESLint warnings */}
 
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/login" replace />} />

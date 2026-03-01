@@ -18,9 +18,9 @@ const OwnerEnquiries = () => {
         e.preventDefault();
         setSaving(true);
         try {
-            const { data } = await api.patch(`/enquiries/${selected._id}`, { reply, status: 'replied' });
+            const { data } = await api.post(`/enquiries/${selected._id}/reply`, { content: reply });
             setEnquiries(enquiries.map(enq => enq._id === selected._id ? data : enq));
-            setSelected(null);
+            setSelected(data); // Keep modal open with updated data
             setReply('');
         } catch (err) { alert('Failed to send reply'); }
         finally { setSaving(false); }
@@ -58,13 +58,13 @@ const OwnerEnquiries = () => {
                                     <th>Type</th>
                                     <th>Subject & Message</th>
                                     <th>Status</th>
-                                    <th>Response</th>
+                                    <th>Last Message</th>
                                     <th>Date</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {enquiries.map(e => (
+                                {enquiries.filter(e => e.status !== 'closed').map(e => (
                                     <tr key={e._id}>
                                         <td>
                                             <div style={{ fontWeight: 700, color: '#1a1a2e' }}>{e.customer?.name}</div>
@@ -75,8 +75,8 @@ const OwnerEnquiries = () => {
                                         </td>
                                         <td>
                                             <div style={{ fontWeight: 600, color: '#1a1a2e', marginBottom: 4 }}>{e.subject}</div>
-                                            <div style={{ color: '#666', fontSize: 12, lineHeight: 1.4, maxWidth: 280 }}>
-                                                {e.message.slice(0, 100)}{e.message.length > 100 ? '...' : ''}
+                                            <div style={{ color: '#666', fontSize: 11, lineHeight: 1.4, maxWidth: 200 }}>
+                                                {e.message.slice(0, 60)}{e.message.length > 60 ? '...' : ''}
                                             </div>
                                         </td>
                                         <td>
@@ -84,31 +84,29 @@ const OwnerEnquiries = () => {
                                                 {e.status}
                                             </span>
                                         </td>
-                                        <td style={{ fontSize: 12, color: '#555', maxWidth: 160, fontStyle: e.reply ? 'normal' : 'italic' }}>
-                                            {e.reply || 'No reply yet'}
+                                        <td style={{ fontSize: 12, color: '#555', maxWidth: 160 }}>
+                                            {e.messages?.[e.messages.length - 1]?.content.slice(0, 60) || 'None'}
                                         </td>
                                         <td style={{ fontSize: 12, color: '#888' }}>
                                             {new Date(e.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
                                         </td>
                                         <td>
                                             <div style={{ display: 'flex', gap: 8 }}>
+                                                <button
+                                                    className="ol-btn ol-btn-sm"
+                                                    style={{ background: '#1a1a2e', color: '#fff' }}
+                                                    onClick={() => { setSelected(e); setReply(''); }}
+                                                >
+                                                    View & Reply
+                                                </button>
                                                 {e.status !== 'closed' && (
-                                                    <>
-                                                        <button
-                                                            className="ol-btn ol-btn-sm"
-                                                            style={{ background: '#1a1a2e', color: '#fff' }}
-                                                            onClick={() => { setSelected(e); setReply(e.reply || ''); }}
-                                                        >
-                                                            Reply
-                                                        </button>
-                                                        <button
-                                                            className="ol-btn ol-btn-sm"
-                                                            style={{ background: '#fff', color: '#666', border: '1px solid #ddd' }}
-                                                            onClick={() => handleClose(e._id)}
-                                                        >
-                                                            Close
-                                                        </button>
-                                                    </>
+                                                    <button
+                                                        className="ol-btn ol-btn-sm"
+                                                        style={{ background: '#fff', color: '#666', border: '1px solid #ddd' }}
+                                                        onClick={() => handleClose(e._id)}
+                                                    >
+                                                        Close
+                                                    </button>
                                                 )}
                                             </div>
                                         </td>
@@ -122,40 +120,99 @@ const OwnerEnquiries = () => {
 
             {selected && (
                 <div className="ol-modal-overlay" onClick={() => setSelected(null)}>
-                    <div className="ol-modal" style={{ maxWidth: 500 }} onClick={e => e.stopPropagation()}>
+                    <div className="ol-modal" style={{ maxWidth: 600, width: '100%' }} onClick={e => e.stopPropagation()}>
                         <div className="ol-modal-header">
-                            <h2>Reply to Enquiry</h2>
+                            <h2>Conversation Thread</h2>
                             <button onClick={() => setSelected(null)}><FiX /></button>
                         </div>
-                        <div className="ol-modal-body">
-                            <div style={{ marginBottom: 20, padding: 16, background: '#f8f9fa', borderRadius: 12, borderLeft: '4px solid #1a1a2e' }}>
-                                <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>From: {selected.customer?.name}</div>
-                                <div style={{ fontWeight: 700, color: '#1a1a2e', marginBottom: 8, fontSize: 15 }}>{selected.subject}</div>
-                                <div style={{ fontSize: 13, color: '#444', lineHeight: 1.5 }}>{selected.message}</div>
+                        <div className="ol-modal-body" style={{ padding: '0 20px 20px' }}>
+                            <div style={{ padding: '12px 0' }}>
+                                <div style={{ fontWeight: 700, color: '#1a1a2e', fontSize: 16 }}>{selected.subject}</div>
+                                <div style={{ fontSize: 12, color: '#888' }}>Customer: {selected.customer?.name}</div>
                             </div>
 
-                            <form onSubmit={handleReply}>
-                                <div className="ol-form-group">
-                                    <label>Response Message</label>
-                                    <textarea
-                                        className="ol-input"
-                                        style={{ minHeight: 140, padding: 12, resize: 'vertical' }}
-                                        value={reply}
-                                        onChange={e => setReply(e.target.value)}
-                                        placeholder="Type your response here..."
-                                        required
-                                    />
-                                </div>
-                                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 12 }}>
-                                    <button type="button" className="ol-btn" style={{ background: '#fff', color: '#666', border: '1px solid #ddd' }} onClick={() => setSelected(null)}>
-                                        Cancel
+                            {/* Thread area */}
+                            <div style={{
+                                maxHeight: 350,
+                                overflowY: 'auto',
+                                padding: '16px',
+                                background: '#f8f9fa',
+                                borderRadius: 12,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 12,
+                                marginBottom: 20,
+                                border: '1px solid #efefef'
+                            }}>
+                                {(selected.messages && selected.messages.length > 0 ? selected.messages : [{ sender: selected.customer, content: selected.message, createdAt: selected.createdAt }]).map((msg, idx) => {
+                                    const isOwner = msg.sender?.role === 'owner' || msg.sender?.role === 'admin' || (typeof msg.sender === 'object' && msg.sender?.name === 'Owner');
+                                    return (
+                                        <div key={idx} style={{
+                                            alignSelf: isOwner ? 'flex-end' : 'flex-start',
+                                            maxWidth: '85%',
+                                            padding: '10px 14px',
+                                            borderRadius: 14,
+                                            fontSize: '13px',
+                                            background: isOwner ? '#fff4ef' : '#fff',
+                                            color: isOwner ? '#1a1a2e' : '#333',
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                                            border: isOwner ? '1px solid #ff6b35' : '1px solid #eee'
+                                        }}>
+                                            <div style={{ fontWeight: 700, fontSize: '10px', marginBottom: 4, color: isOwner ? '#ff6b35' : '#888' }}>
+                                                {isOwner ? 'You (Owner)' : (msg.sender?.name || 'Customer')}
+                                            </div>
+                                            <div style={{ lineHeight: 1.5 }}>{msg.content}</div>
+                                            <div style={{ fontSize: '9px', color: '#999', textAlign: 'right', marginTop: 4 }}>
+                                                {new Date(msg.createdAt).toLocaleString('en-IN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' })}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {selected.status !== 'closed' ? (
+                                <form onSubmit={handleReply}>
+                                    <div className="ol-form-group">
+                                        <label style={{ fontWeight: 600, fontSize: 13, marginBottom: 8, display: 'block' }}>Add your message</label>
+                                        <textarea
+                                            className="ol-input"
+                                            style={{ minHeight: 100, padding: 12, borderRadius: 10, fontSize: 13 }}
+                                            value={reply}
+                                            onChange={e => setReply(e.target.value)}
+                                            placeholder="Type your response here..."
+                                            required
+                                        />
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 16 }}>
+                                        <button type="button" className="ol-btn" style={{ background: '#f5f5f5', color: '#666' }} onClick={() => setSelected(null)}>
+                                            Close Modal
+                                        </button>
+                                        <button type="submit" className="ol-btn" style={{ background: '#1a1a2e', color: '#fff' }} disabled={saving}>
+                                            <FiCornerUpRight style={{ marginRight: 6 }} />
+                                            {saving ? 'Sending...' : 'Send Reply'}
+                                        </button>
+                                    </div>
+                                </form>
+                            ) : (
+                                <div style={{
+                                    textAlign: 'center',
+                                    padding: '20px',
+                                    background: '#f8f9fa',
+                                    borderRadius: '12px',
+                                    border: '1px dashed #ddd',
+                                    color: '#888'
+                                }}>
+                                    <FiX size={24} style={{ marginBottom: 10, opacity: 0.5 }} />
+                                    <div>This enquiry is closed. No further replies can be sent.</div>
+                                    <button
+                                        className="ol-btn"
+                                        style={{ marginTop: 16, background: '#f5f5f5', color: '#666' }}
+                                        onClick={() => setSelected(null)}
+                                    >
+                                        Close Modal
                                     </button>
-                                    <button type="submit" className="ol-btn" style={{ background: '#1a1a2e', color: '#fff' }} disabled={saving}>
-                                        <FiCornerUpRight style={{ marginRight: 6 }} />
-                                        {saving ? 'Sending...' : 'Send Reply'}
-                                    </button>
                                 </div>
-                            </form>
+                            )}
                         </div>
                     </div>
                 </div>

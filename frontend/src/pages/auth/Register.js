@@ -37,8 +37,11 @@ const Register = () => {
             <div className="auth-box">
                 <div className="auth-logo">
                     <div className="logo-icon">🔧</div>
-                    <h1>Satyam Motor Parts</h1>
-                    <p>Automobile Parts & Service Shop</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <h1 style={{ marginBottom: '2px' }}>Satyam Motor Parts</h1>
+                        <div style={{ fontSize: '12px', fontWeight: '600', color: '#888', textTransform: 'uppercase', letterSpacing: '1px' }}>Bikramganj, Bihar</div>
+                        <div style={{ fontSize: '11px', color: '#ff6b35', fontWeight: 'bold', marginTop: '2px' }}>Genuine Parts • Best Rates</div>
+                    </div>
                 </div>
                 <h2>Create Account</h2>
                 <p className="sub">Join us as a customer</p>

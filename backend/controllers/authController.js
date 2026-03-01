@@ -11,10 +11,10 @@ const generateToken = (id) => {
 // @access Public
 const register = async (req, res) => {
     try {
-        const { name, email, password, phone } = req.body;
+        const { name, email, password, phone, street, city, state, zip } = req.body;
 
-        if (!name || !email || !password) {
-            return res.status(400).json({ message: 'Please provide name, email and password' });
+        if (!name || !email || !password || !phone || !street || !city || !state || !zip) {
+            return res.status(400).json({ message: 'Please provide all required fields' });
         }
 
         const userExists = await User.findOne({ email });
@@ -22,7 +22,17 @@ const register = async (req, res) => {
             return res.status(400).json({ message: 'User already exists with this email' });
         }
 
-        const user = await User.create({ name, email, password, phone, role: 'customer' });
+        const user = await User.create({
+            name,
+            email,
+            password,
+            phone,
+            street,
+            city,
+            state,
+            zip,
+            role: 'customer',
+        });
 
         res.status(201).json({
             _id: user._id,
@@ -30,6 +40,10 @@ const register = async (req, res) => {
             email: user.email,
             role: user.role,
             phone: user.phone,
+            street: user.street,
+            city: user.city,
+            state: user.state,
+            zip: user.zip,
             token: generateToken(user._id),
         });
     } catch (error) {
@@ -64,6 +78,10 @@ const login = async (req, res) => {
             email: user.email,
             role: user.role,
             phone: user.phone,
+            street: user.street,
+            city: user.city,
+            state: user.state,
+            zip: user.zip,
             token: generateToken(user._id),
         });
     } catch (error) {
@@ -93,6 +111,11 @@ const updateProfile = async (req, res) => {
 
         user.name = req.body.name || user.name;
         user.phone = req.body.phone || user.phone;
+        user.street = req.body.street || user.street;
+        user.city = req.body.city || user.city;
+        user.state = req.body.state || user.state;
+        user.zip = req.body.zip || user.zip;
+
         if (req.body.password) {
             user.password = req.body.password;
         }
@@ -104,6 +127,10 @@ const updateProfile = async (req, res) => {
             email: updatedUser.email,
             role: updatedUser.role,
             phone: updatedUser.phone,
+            street: updatedUser.street,
+            city: updatedUser.city,
+            state: updatedUser.state,
+            zip: updatedUser.zip,
             token: generateToken(updatedUser._id),
         });
     } catch (error) {

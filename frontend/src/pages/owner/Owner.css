@@ -260,7 +260,8 @@
     color: #c2410c;
 }
 
-.ol-badge.confirmed {
+.ol-badge.confirmed,
+.ol-badge.approved {
     background: #f0fdf4;
     color: #15803d;
 }
@@ -304,6 +305,49 @@
     outline: none;
     border-color: #ff6b35;
     box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+/* ── Search Box ── */
+.ol-search-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 10px 16px;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.ol-search-box:focus-within {
+    border-color: #ff6b35;
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.1);
+}
+
+.ol-search-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a2e !important;
+    background: transparent;
+}
+
+.ol-search-box input::placeholder {
+    color: #aaa;
+    font-weight: 400;
+}
+
+.ol-search-box svg {
+    color: #aaa;
+    flex-shrink: 0;
+    transition: color 0.2s;
+}
+
+.ol-search-box:focus-within svg {
+    color: #ff6b35;
 }
 
 .ol-btn {
@@ -433,43 +477,4 @@
 .ol-stat-icon.indigo {
     background: rgba(79, 70, 229, 0.1);
     color: #4f46e5;
-}
-
-/* ── Responsiveness ── */
-.sidebar-toggle {
-    display: none !important;
-}
-
-.sidebar-overlay {
-    display: none !important;
-}
-
-@media (max-width: 768px) {
-    .sidebar-toggle {
-        display: block !important;
-    }
-
-    .sidebar-overlay {
-        display: block !important;
-    }
-
-    .sidebar-aside {
-        transform: translateX(-100%);
-    }
-
-    .sidebar-aside.open {
-        transform: translateX(0);
-    }
-
-    .dashboard-main-grid {
-        grid-template-columns: 1fr !important;
-    }
-
-    .billing-main-grid {
-        grid-template-columns: 1fr !important;
-    }
-
-    .billing-main-grid>div:last-child {
-        position: static !important;
-    }
 }

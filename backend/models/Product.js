@@ -39,6 +39,12 @@ const productSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
         },
+        discountPercentage: {
+            type: Number,
+            default: 0,
+            min: 0,
+            max: 100,
+        },
     },
     { timestamps: true }
 );

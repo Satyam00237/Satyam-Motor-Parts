@@ -5,7 +5,6 @@ import { FiSearch, FiShoppingCart, FiPlus, FiMinus, FiTrash2, FiUser, FiCheckCir
 
 const OwnerBilling = () => {
     const [products, setProducts] = useState([]);
-    // const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [cart, setCart] = useState([]);
     const [guestInfo, setGuestInfo] = useState({ name: '', phone: '' });
@@ -19,17 +18,20 @@ const OwnerBilling = () => {
         api.get('/products')
             .then(r => setProducts(r.data))
             .catch(console.error);
-        // .finally(() => setLoading(false));
     }, []);
 
     const categories = ['All', 'Engine Parts', 'Brakes', 'Electrical', 'Body Parts', 'Tyres', 'Oils & Lubricants', 'Accessories', 'Other'];
 
     const addToCart = (product) => {
+        const discountedPrice = product.discountPercentage > 0
+            ? product.price * (1 - product.discountPercentage / 100)
+            : product.price;
+
         const existing = cart.find(item => item._id === product._id);
         if (existing) {
             setCart(cart.map(item => item._id === product._id ? { ...item, quantity: item.quantity + 1 } : item));
         } else {
-            setCart([...cart, { ...product, quantity: 1 }]);
+            setCart([...cart, { ...product, price: discountedPrice, originalPrice: product.price, quantity: 1 }]);
         }
     };
 
@@ -45,14 +47,15 @@ const OwnerBilling = () => {
 
     const removeFromCart = (id) => setCart(cart.filter(item => item._id !== id));
 
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const gst = subtotal * 0.18;
-    const finalTotal = subtotal + gst;
+    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
     const handleCheckout = async () => {
         if (cart.length === 0) return alert('Add items to cart first');
         setSaving(true);
         try {
+            const gstAmount = total * 0.18;
+            const finalTotal = total + gstAmount;
+
             const orderData = {
                 orderType: 'Offline',
                 items: cart.map(item => ({
@@ -60,6 +63,7 @@ const OwnerBilling = () => {
                     quantity: item.quantity,
                     price: item.price
                 })),
+                gstAmount: gstAmount,
                 totalAmount: finalTotal,
                 paymentMethod,
                 guestInfo
@@ -103,19 +107,18 @@ const OwnerBilling = () => {
             subtitle="Create quick bills for offline customers"
             backTo="/owner/dashboard"
         >
-            <div className="billing-main-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 24, alignItems: 'start' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 24, alignItems: 'start' }}>
 
                 {/* Product Section */}
                 <div className="ol-card">
                     <div style={{ marginBottom: 20 }}>
-                        <div className="ol-search-box" style={{ marginBottom: 16, padding: '14px 20px' }}>
-                            <FiSearch style={{ fontSize: '20px' }} />
+                        <div className="ol-search-box" style={{ marginBottom: 20 }}>
+                            <FiSearch />
                             <input
                                 type="text"
                                 placeholder="Search parts by name or SKU..."
                                 value={searchTerm}
                                 onChange={e => setSearchTerm(e.target.value)}
-                                style={{ fontSize: '16px', fontWeight: 500 }}
                             />
                         </div>
 
@@ -170,7 +173,17 @@ const OwnerBilling = () => {
                                         <td>
                                             <span style={{ fontWeight: 600, color: p.stock < 5 ? '#ef4444' : '#10b981' }}>{p.stock}</span>
                                         </td>
-                                        <td style={{ fontWeight: 700 }}>₹{p.price.toLocaleString('en-IN')}</td>
+                                        <td style={{ fontWeight: 700 }}>
+                                            {p.discountPercentage > 0 ? (
+                                                <>
+                                                    <div style={{ textDecoration: 'line-through', color: '#888', fontSize: '11px' }}>₹{p.price.toLocaleString('en-IN')}</div>
+                                                    <div style={{ color: '#ff6b35' }}>₹{(p.price * (1 - p.discountPercentage / 100)).toLocaleString('en-IN')}</div>
+                                                    <div className="ol-badge confirmed" style={{ fontSize: '9px', padding: '1px 4px', marginTop: '2px' }}>{p.discountPercentage}% OFF</div>
+                                                </>
+                                            ) : (
+                                                `₹${p.price.toLocaleString('en-IN')}`
+                                            )}
+                                        </td>
                                         <td>
                                             <button
                                                 className="ol-btn ol-btn-sm ol-btn-primary"
@@ -233,7 +246,12 @@ const OwnerBilling = () => {
                                     <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid #eee' }}>
                                         <div style={{ flex: 1, minWidth: 0 }}>
                                             <div style={{ fontSize: 13, fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</div>
-                                            <div style={{ fontSize: 11, color: '#888' }}>₹{item.price} x {item.quantity}</div>
+                                            <div style={{ fontSize: 11, color: '#888' }}>
+                                                {item.discountPercentage > 0 ? (
+                                                    <span style={{ color: '#ff6b35', fontWeight: 600 }}>₹{item.price.toLocaleString('en-IN')} </span>
+                                                ) : `₹${item.price.toLocaleString('en-IN')} `}
+                                                x {item.quantity}
+                                            </div>
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                             <div style={{ display: 'flex', alignItems: 'center', background: '#f5f5f5', borderRadius: 6 }}>
@@ -251,15 +269,15 @@ const OwnerBilling = () => {
                         <div style={{ background: '#f8f8f8', borderRadius: 12, padding: 16, marginBottom: 20 }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                                 <span style={{ color: '#666', fontSize: 14 }}>Subtotal</span>
-                                <span style={{ fontWeight: 600 }}>₹{subtotal.toLocaleString('en-IN')}</span>
+                                <span style={{ fontWeight: 600 }}>₹{total.toLocaleString('en-IN')}</span>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                                 <span style={{ color: '#666', fontSize: 14 }}>GST (18%)</span>
-                                <span style={{ fontWeight: 600 }}>₹{gst.toLocaleString('en-IN')}</span>
+                                <span style={{ fontWeight: 600 }}>₹{(total * 0.18).toLocaleString('en-IN')}</span>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #ddd', paddingTop: 8 }}>
                                 <span style={{ fontWeight: 800, fontSize: 18 }}>Total Bill</span>
-                                <span style={{ fontWeight: 800, fontSize: 18, color: '#ff6b35' }}>₹{finalTotal.toLocaleString('en-IN')}</span>
+                                <span style={{ fontWeight: 800, fontSize: 18, color: '#ff6b35' }}>₹{(total * 1.18).toLocaleString('en-IN')}</span>
                             </div>
                         </div>
 

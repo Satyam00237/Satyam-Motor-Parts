@@ -17,6 +17,14 @@ const createOrder = async (req, res) => {
 
         const isOffline = orderType === 'Offline';
         console.log(`[OrderDebug] Order type: ${orderType || 'Online'}, IsOffline: ${isOffline}`);
+
+        if (!isOffline) {
+            if (!shippingAddress || !shippingAddress.street || !shippingAddress.city || !shippingAddress.state || !shippingAddress.zip) {
+                console.log('[OrderDebug] Error: Missing shipping address fields');
+                return res.status(400).json({ message: 'Shipping address with street, city, state and zip is required' });
+            }
+        }
+
         console.log(`[OrderDebug] User ID from req.user: ${req.user?._id}`);
 
         const order = await Order.create({
@@ -101,21 +109,21 @@ const updateOrderStatus = async (req, res) => {
         const { status } = req.body;
         console.log(`[OrderUpdate] Attempting to update Order ${req.params.id} to status: ${status}`);
 
-        const order = await Order.findById(req.params.id);
-        if (!order) {
-            console.log(`[OrderUpdate] Order not found: ${req.params.id}`);
-            return res.status(404).json({ message: 'Order not found' });
-        }
-
-        order.status = status || order.status;
-        await order.save();
-        console.log(`[OrderUpdate] Successfully updated Order ${req.params.id}`);
-
-        const updated = await Order.findById(req.params.id).populate([
+        const updated = await Order.findByIdAndUpdate(
+            req.params.id,
+            { status },
+            { new: true, runValidators: true }
+        ).populate([
             { path: 'customer', select: 'name email phone' },
             { path: 'items.product', select: 'name image' }
         ]);
 
+        if (!updated) {
+            console.log(`[OrderUpdate] Order not found: ${req.params.id}`);
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        console.log(`[OrderUpdate] Successfully updated Order ${req.params.id}`);
         res.json(updated);
     } catch (error) {
         console.error(`[OrderUpdate] Error updating order ${req.params.id}:`, error);

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import CustomerLayout from '../../components/CustomerLayout';
 import { useCart } from '../../context/CartContext';
@@ -68,7 +67,7 @@ const Products = () => {
                 if (sort === 'name') sorted.sort((a, b) => a.name.localeCompare(b.name));
                 setProducts(sorted);
             } catch (err) {
-                if (!axios.isCancel(err)) console.error(err);
+                if (err.name !== 'AbortError') console.error(err);
             } finally {
                 setLoading(false);
             }
@@ -145,9 +144,9 @@ const Products = () => {
                                             ? <img src={p.image.startsWith('/') ? `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${p.image}` : p.image} alt={p.name} />
                                             : <span>{categoryEmoji[p.category] || '📦'}</span>
                                         }
-                                        {p.mrp && p.mrp > p.price && (
+                                        {p.discountPercentage > 0 && (
                                             <div className="cp-discount-badge">
-                                                {Math.round((1 - p.price / p.mrp) * 100)}% OFF
+                                                {p.discountPercentage}% OFF
                                             </div>
                                         )}
                                         <div className={`cp-stock-badge ${p.stock > 0 ? 'in' : 'out'}`}>
@@ -161,9 +160,13 @@ const Products = () => {
                                             <div className="cp-card-desc">{p.description}</div>
                                         )}
                                         <div className="cp-price-row">
-                                            <span className="cp-price">₹{p.price.toLocaleString('en-IN')}</span>
-                                            {p.mrp && p.mrp > p.price && (
-                                                <span className="cp-mrp">MRP ₹{p.mrp.toLocaleString('en-IN')}</span>
+                                            {p.discountPercentage > 0 ? (
+                                                <>
+                                                    <span className="cp-price">₹{(p.price * (1 - p.discountPercentage / 100)).toLocaleString('en-IN')}</span>
+                                                    <span className="cp-mrp" style={{ textDecoration: 'line-through' }}>₹{p.price.toLocaleString('en-IN')}</span>
+                                                </>
+                                            ) : (
+                                                <span className="cp-price">₹{p.price.toLocaleString('en-IN')}</span>
                                             )}
                                         </div>
                                         <button
@@ -171,7 +174,14 @@ const Products = () => {
                                             disabled={p.stock <= 0}
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                addToCart(p);
+                                                const discountedPrice = p.discountPercentage > 0
+                                                    ? p.price * (1 - p.discountPercentage / 100)
+                                                    : p.price;
+                                                addToCart({
+                                                    ...p,
+                                                    originalPrice: p.price,
+                                                    price: discountedPrice
+                                                });
                                                 setToast(`${p.name} added to cart!`);
                                                 setTimeout(() => setToast(''), 3000);
                                             }}

@@ -44,8 +44,8 @@ const Sidebar = () => {
         navigate('/login');
     };
 
-    // const roleColors = { customer: '#3b82f6', owner: '#f97316', admin: '#10b981' };
-    // const roleColor = roleColors[user?.role] || '#f97316';
+    const roleColors = { customer: '#3b82f6', owner: '#f97316', admin: '#10b981' };
+    const roleColor = roleColors[user?.role] || '#f97316';
 
     return (
         <>
@@ -53,7 +53,7 @@ const Sidebar = () => {
             <button
                 onClick={() => setOpen(!open)}
                 style={{
-                    position: 'fixed', top: 16, left: 16, zIndex: 1100,
+                    display: 'none', position: 'fixed', top: 16, left: 16, zIndex: 1100,
                     background: '#1a1a2e', border: 'none',
                     color: '#fff', borderRadius: '8px', padding: '10px',
                     cursor: 'pointer', fontSize: '20px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
@@ -68,28 +68,24 @@ const Sidebar = () => {
                     onClick={() => setOpen(false)}
                     style={{
                         position: 'fixed', inset: 0, background: 'rgba(26,26,46,0.5)',
-                        zIndex: 999, backdropFilter: 'blur(4px)'
+                        zIndex: 999, display: 'none', backdropFilter: 'blur(4px)'
                     }}
                     className="sidebar-overlay"
                 />
             )}
 
-            <aside
-                className={`sidebar-aside ${open ? 'open' : ''}`}
-                style={{
-                    width: 260,
-                    background: '#1a1a2e',
-                    borderRight: '1px solid rgba(255,255,255,0.05)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    position: 'fixed',
-                    top: 0, left: 0, bottom: 0,
-                    zIndex: 1000,
-                    transition: 'transform 0.3s',
-                    fontFamily: "'Poppins', sans-serif",
-                    transform: open ? 'translateX(0)' : undefined
-                }}
-            >
+            <aside style={{
+                width: 260,
+                background: '#1a1a2e',
+                borderRight: '1px solid rgba(255,255,255,0.05)',
+                display: 'flex',
+                flexDirection: 'column',
+                position: 'fixed',
+                top: 0, left: 0, bottom: 0,
+                zIndex: 1000,
+                transition: 'transform 0.3s',
+                fontFamily: "'Poppins', sans-serif"
+            }}>
                 {/* Logo */}
                 <div style={{
                     padding: '24px 20px',
@@ -104,9 +100,10 @@ const Sidebar = () => {
                         }}>
                             ⚙️
                         </div>
-                        <div>
-                            <div style={{ fontWeight: 800, fontSize: 16, color: '#fff', letterSpacing: '-0.2px' }}>Satyam Motor Parts</div>
-                            <div style={{ fontSize: 10, color: '#888', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Parts & Service</div>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <div style={{ fontWeight: 800, fontSize: '15px', color: '#fff', letterSpacing: '-0.2px', lineHeight: '1.2' }}>Satyam Motor Parts</div>
+                            <div style={{ fontSize: '9px', color: '#888', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>Bikramganj, Bihar</div>
+                            <div style={{ fontSize: '9px', color: '#ff6b35', fontWeight: 'bold' }}>Genuine Parts • Best Rates</div>
                         </div>
                     </div>
                 </div>

@@ -25,10 +25,23 @@ const enquirySchema = new mongoose.Schema(
             enum: ['open', 'replied', 'closed'],
             default: 'open',
         },
-        reply: {
-            type: String,
-            default: '',
-        },
+        messages: [
+            {
+                sender: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'User',
+                    required: true,
+                },
+                content: {
+                    type: String,
+                    required: true,
+                },
+                createdAt: {
+                    type: Date,
+                    default: Date.now,
+                },
+            },
+        ],
     },
     { timestamps: true }
 );

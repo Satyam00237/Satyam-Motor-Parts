@@ -7,6 +7,17 @@ const createBooking = async (req, res) => {
     try {
         const { vehicleType, vehicleNumber, serviceType, serviceDate, timeSlot, notes } = req.body;
 
+        // Check if slot already booked for this date
+        const existing = await Booking.findOne({
+            serviceDate: new Date(serviceDate),
+            timeSlot,
+            status: { $ne: 'cancelled' }
+        });
+
+        if (existing) {
+            return res.status(400).json({ message: 'This time slot is already booked. Please choose another.' });
+        }
+
         const booking = await Booking.create({
             customer: req.user._id,
             vehicleType,
@@ -21,6 +32,26 @@ const createBooking = async (req, res) => {
         res.status(201).json(populated);
     } catch (error) {
         res.status(400).json({ message: error.message });
+    }
+};
+
+// @desc   Get booked slots for a date
+// @route  GET /api/bookings/booked-slots
+// @access Private
+const getBookedSlots = async (req, res) => {
+    try {
+        const { date } = req.query;
+        if (!date) return res.status(400).json({ message: 'Date is required' });
+
+        const bookings = await Booking.find({
+            serviceDate: new Date(date),
+            status: { $ne: 'cancelled' }
+        }).select('timeSlot');
+
+        const bookedSlots = bookings.map(b => b.timeSlot);
+        res.json(bookedSlots);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };
 
@@ -109,12 +140,20 @@ const getBookingStats = async (req, res) => {
     try {
         const total = await Booking.countDocuments();
         const pending = await Booking.countDocuments({ status: 'pending' });
-        const confirmed = await Booking.countDocuments({ status: 'confirmed' });
+        const approved = await Booking.countDocuments({ status: 'approved' });
         const completed = await Booking.countDocuments({ status: 'completed' });
-        res.json({ totalBookings: total, pending, confirmed, completed });
+        res.json({ totalBookings: total, pending, approved, completed });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-module.exports = { createBooking, getMyBookings, getAllBookings, updateBookingStatus, deleteBooking, getBookingStats };
+module.exports = {
+    createBooking,
+    getMyBookings,
+    getAllBookings,
+    updateBookingStatus,
+    deleteBooking,
+    getBookingStats,
+    getBookedSlots
+};

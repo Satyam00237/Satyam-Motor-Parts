@@ -26,7 +26,24 @@ const userSchema = new mongoose.Schema(
         },
         phone: {
             type: String,
-            default: '',
+            required: [true, 'Phone number is required'],
+        },
+        street: {
+            type: String,
+            required: [true, 'Street address is required'],
+        },
+        city: {
+            type: String,
+            required: [true, 'City is required'],
+        },
+        state: {
+            type: String,
+            required: [true, 'State is required'],
+            default: 'Rajasthan',
+        },
+        zip: {
+            type: String,
+            required: [true, 'ZIP code is required'],
         },
     },
     { timestamps: true }

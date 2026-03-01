@@ -22,7 +22,7 @@ const bookingSchema = new mongoose.Schema(
                 'General Service', 'Oil Change', 'Brake Service', 'Brake Inspection',
                 'Engine Repair', 'Engine Tune-up', 'Electrical Repair', 'Tyre Change',
                 'Tyre Replacement', 'Battery Replacement', 'AC Service', 'Body Work',
-                'Wheel Alignment', 'Other'
+                'Wheel Alignment', 'Other', 'Electrical Repair'
             ],
         },
         serviceDate: {
@@ -39,7 +39,7 @@ const bookingSchema = new mongoose.Schema(
         },
         status: {
             type: String,
-            enum: ['pending', 'confirmed', 'in-progress', 'completed', 'cancelled'],
+            enum: ['pending', 'approved', 'in-progress', 'completed', 'cancelled'],
             default: 'pending',
         },
     },

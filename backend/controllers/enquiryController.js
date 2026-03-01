@@ -11,9 +11,74 @@ const createEnquiry = async (req, res) => {
             subject,
             message,
             type,
+            messages: [{
+                sender: req.user._id,
+                content: message,
+            }],
         });
         const populated = await enquiry.populate('customer', 'name email phone');
         res.status(201).json(populated);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+// @desc   Get enquiry by ID
+// @route  GET /api/enquiries/:id
+// @access Private (Customer, Owner, Admin)
+const getEnquiryById = async (req, res) => {
+    try {
+        const enquiry = await Enquiry.findById(req.params.id)
+            .populate('customer', 'name email phone')
+            .populate('messages.sender', 'name role');
+
+        if (!enquiry) return res.status(404).json({ message: 'Enquiry not found' });
+
+        // Check authorization
+        if (req.user.role === 'customer' && enquiry.customer._id.toString() !== req.user._id.toString()) {
+            return res.status(401).json({ message: 'Not authorized' });
+        }
+
+        res.json(enquiry);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc   Add reply to enquiry
+// @route  POST /api/enquiries/:id/reply
+// @access Private (Customer, Owner, Admin)
+const addReply = async (req, res) => {
+    try {
+        const { content } = req.body;
+        const enquiry = await Enquiry.findById(req.params.id);
+
+        if (!enquiry) return res.status(404).json({ message: 'Enquiry not found' });
+        if (enquiry.status === 'closed') {
+            return res.status(400).json({ message: 'This enquiry is closed and cannot be replied to.' });
+        }
+
+        // Check authorization
+        if (req.user.role === 'customer' && enquiry.customer.toString() !== req.user._id.toString()) {
+            return res.status(401).json({ message: 'Not authorized' });
+        }
+
+        enquiry.messages.push({
+            sender: req.user._id,
+            content,
+        });
+
+        if (req.user.role === 'owner' || req.user.role === 'admin') {
+            enquiry.status = 'replied';
+        }
+
+        const updated = await enquiry.save();
+        const populated = await updated.populate([
+            { path: 'customer', select: 'name email phone' },
+            { path: 'messages.sender', select: 'name role' }
+        ]);
+
+        res.json(populated);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -25,7 +90,8 @@ const createEnquiry = async (req, res) => {
 const getMyEnquiries = async (req, res) => {
     try {
         const enquiries = await Enquiry.find({ customer: req.user._id })
-            .populate('customer', 'name email')
+            .populate('customer', 'name email shadowName')
+            .populate('messages.sender', 'name role')
             .sort({ createdAt: -1 });
         res.json(enquiries);
     } catch (error) {
@@ -40,6 +106,7 @@ const getAllEnquiries = async (req, res) => {
     try {
         const enquiries = await Enquiry.find()
             .populate('customer', 'name email phone')
+            .populate('messages.sender', 'name role')
             .sort({ createdAt: -1 });
         res.json(enquiries);
     } catch (error) {
@@ -47,7 +114,7 @@ const getAllEnquiries = async (req, res) => {
     }
 };
 
-// @desc   Update enquiry status / reply
+// @desc   Update enquiry status
 // @route  PATCH /api/enquiries/:id
 // @access Private (Owner, Admin)
 const updateEnquiry = async (req, res) => {
@@ -56,7 +123,6 @@ const updateEnquiry = async (req, res) => {
         if (!enquiry) return res.status(404).json({ message: 'Enquiry not found' });
 
         enquiry.status = req.body.status || enquiry.status;
-        enquiry.reply = req.body.reply || enquiry.reply;
 
         const updated = await enquiry.save();
         await updated.populate('customer', 'name email phone');
@@ -80,4 +146,12 @@ const deleteEnquiry = async (req, res) => {
     }
 };
 
-module.exports = { createEnquiry, getMyEnquiries, getAllEnquiries, updateEnquiry, deleteEnquiry };
+module.exports = {
+    createEnquiry,
+    getMyEnquiries,
+    getAllEnquiries,
+    updateEnquiry,
+    deleteEnquiry,
+    getEnquiryById,
+    addReply
+};

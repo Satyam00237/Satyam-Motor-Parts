@@ -31,12 +31,12 @@ const orderSchema = new mongoose.Schema(
             },
         ],
         shippingAddress: {
-            fullName: { type: String, required: false },
-            phone: { type: String, required: false },
-            street: { type: String, required: false },
-            city: { type: String, required: false },
-            state: { type: String, required: false },
-            zip: { type: String, required: false },
+            fullName: { type: String, required: true },
+            phone: { type: String, required: true },
+            street: { type: String, required: true },
+            city: { type: String, required: true },
+            state: { type: String, required: true },
+            zip: { type: String, required: true },
         },
         paymentMethod: {
             type: String,
@@ -46,6 +46,10 @@ const orderSchema = new mongoose.Schema(
         totalAmount: {
             type: Number,
             required: true,
+        },
+        gstAmount: {
+            type: Number,
+            default: 0,
         },
         status: {
             type: String,

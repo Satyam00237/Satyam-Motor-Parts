@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import OwnerLayout from '../../components/OwnerLayout';
 import api from '../../services/api';
-import { FiPlus, FiEdit2, FiTrash2, FiPackage, FiX, FiCheck } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiPackage, FiX, FiCheck, FiSearch, FiImage } from 'react-icons/fi';
 
 const CATEGORIES = ['Engine Parts', 'Brakes', 'Electrical', 'Body Parts', 'Tyres', 'Oils & Lubricants', 'Accessories', 'Other'];
 
-const emptyForm = { name: '', description: '', category: 'Engine Parts', price: '', stock: '', image: '', available: true };
+const emptyForm = { name: '', description: '', category: 'Engine Parts', price: '', stock: '', image: '', available: true, discountPercentage: 0 };
 
 const OwnerProducts = () => {
     const location = useLocation();
@@ -21,6 +21,7 @@ const OwnerProducts = () => {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
     const [stockFilter, setStockFilter] = useState(initialFilter === 'low-stock');
+    const [searchTerm, setSearchTerm] = useState('');
 
     const [imageMethod, setImageMethod] = useState('url'); // 'url' or 'upload'
     const [uploading, setUploading] = useState(false);
@@ -38,9 +39,14 @@ const OwnerProducts = () => {
         if (initialFilter === 'low-stock') setStockFilter(true);
     }, [initialFilter]);
 
-    const displayedProducts = stockFilter
-        ? products.filter(p => p.stock < 5)
-        : products;
+    const displayedProducts = products.filter(p => {
+        const matchesStock = stockFilter ? p.stock < 5 : true;
+        const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            p.category.toLowerCase().includes(searchTerm.toLowerCase());
+        return matchesStock && matchesSearch;
+    });
+
+
 
     const openAdd = () => {
         setEditing(null);
@@ -52,7 +58,16 @@ const OwnerProducts = () => {
 
     const openEdit = (p) => {
         setEditing(p);
-        setForm({ name: p.name, description: p.description, category: p.category, price: p.price, stock: p.stock, image: p.image, available: p.available });
+        setForm({
+            name: p.name,
+            description: p.description,
+            category: p.category,
+            price: p.price,
+            stock: p.stock,
+            image: p.image,
+            available: p.available,
+            discountPercentage: p.discountPercentage || 0
+        });
         setImageMethod(p.image?.startsWith('/') ? 'upload' : 'url');
         setError('');
         setShowModal(true);
@@ -135,6 +150,16 @@ const OwnerProducts = () => {
                 </div>
             ) : (
                 <div className="ol-card" style={{ padding: 0 }}>
+                    <div style={{ padding: '20px', borderBottom: '1px solid #eee' }}>
+                        <div className="ol-search-box">
+                            <FiSearch />
+                            <input
+                                placeholder="Search products by name or category..."
+                                value={searchTerm}
+                                onChange={e => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                    </div>
                     {stockFilter && (
                         <div style={{ background: '#fef2f2', padding: '12px 20px', borderBottom: '1px solid #fee2e2', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <span style={{ color: '#dc2626', fontSize: 13, fontWeight: 600 }}>Showing Products with Low Stock (&lt;5)</span>
@@ -144,17 +169,39 @@ const OwnerProducts = () => {
                     <div className="ol-table-wrap">
                         <table className="ol-table">
                             <thead>
-                                <tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr>
+                                <tr><th style={{ width: '60px' }}>Img</th><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr>
                             </thead>
                             <tbody>
                                 {displayedProducts.map(p => (
                                     <tr key={p._id}>
+                                        <td>
+                                            <div style={{ width: 45, height: 45, borderRadius: 6, overflow: 'hidden', background: '#f8f8f8', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #eee' }}>
+                                                {p.image ? (
+                                                    <img
+                                                        src={p.image.startsWith('/') ? `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${p.image}` : p.image}
+                                                        alt=""
+                                                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                                                    />
+                                                ) : (
+                                                    <FiImage style={{ color: '#ccc' }} />
+                                                )}
+                                            </div>
+                                        </td>
                                         <td style={{ minWidth: 200 }}>
                                             <div style={{ fontWeight: 700, color: '#1a1a2e' }}>{p.name}</div>
                                             <div style={{ fontSize: 12, color: '#888', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.description}</div>
                                         </td>
                                         <td><span className="ol-badge confirmed">{p.category}</span></td>
-                                        <td style={{ color: '#ff6b35', fontWeight: 700 }}>₹{p.price.toLocaleString('en-IN')}</td>
+                                        <td style={{ color: '#ff6b35', fontWeight: 700 }}>
+                                            {p.discountPercentage > 0 ? (
+                                                <div>
+                                                    <div style={{ textDecoration: 'line-through', color: '#888', fontSize: 12 }}>₹{p.price.toLocaleString('en-IN')}</div>
+                                                    <div>₹{(p.price * (1 - p.discountPercentage / 100)).toLocaleString('en-IN')} <span className="ol-badge confirmed" style={{ fontSize: 10, padding: '2px 6px' }}>{p.discountPercentage}% OFF</span></div>
+                                                </div>
+                                            ) : (
+                                                `₹${p.price.toLocaleString('en-IN')}`
+                                            )}
+                                        </td>
                                         <td>
                                             <span style={{ color: p.stock < 5 ? '#dc2626' : '#16a34a', fontWeight: 700 }}>{p.stock}</span>
                                         </td>
@@ -201,10 +248,14 @@ const OwnerProducts = () => {
                                     {CATEGORIES.map(c => <option key={c}>{c}</option>)}
                                 </select>
                             </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 16 }}>
                                 <div>
                                     <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#1a1a2e', marginBottom: 6 }}>Price (₹)</label>
                                     <input className="ol-input" type="number" name="price" value={form.price} onChange={handleChange} min="0" required />
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#1a1a2e', marginBottom: 6 }}>Discount (%)</label>
+                                    <input className="ol-input" type="number" name="discountPercentage" value={form.discountPercentage} onChange={handleChange} min="0" max="100" />
                                 </div>
                                 <div>
                                     <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#1a1a2e', marginBottom: 6 }}>Stock</label>
@@ -268,7 +319,7 @@ const OwnerProducts = () => {
                                         <img
                                             src={form.image.startsWith('/') ? `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${form.image}` : form.image}
                                             alt="Preview"
-                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                            style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#fdfdfd' }}
                                         />
                                         <button
                                             type="button"

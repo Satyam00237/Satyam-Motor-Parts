@@ -45,7 +45,7 @@ const CustomerLayout = ({ children }) => {
         <div className="cl-page">
             {/* ── Topbar ── */}
             <div className="cl-topbar">
-                <span>📞 +91 7257008160</span>
+                <span>📞 +91-7257008160</span>
                 <span>🚚 Free Delivery on orders above ₹499</span>
                 <span>⭐ Genuine Parts • Best Rates</span>
             </div>
@@ -54,11 +54,12 @@ const CustomerLayout = ({ children }) => {
             <header className="cl-header">
                 <div className="cl-header-inner">
                     {/* Logo */}
-                    <div className="cl-logo" onClick={() => navigate('/')}>
+                    <div className="cl-logo" onClick={() => navigate('/')} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <div className="cl-logo-icon">🔧</div>
-                        <div>
-                            <div className="cl-logo-name">Satyam <span>Motor Parts</span></div>
-                            <div className="cl-logo-tag">Genuine Parts • Best Rates</div>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                            <div className="cl-logo-name" style={{ lineHeight: '1' }}>Satyam <span>Motor Parts</span></div>
+                            <div className="cl-logo-location" style={{ fontSize: '10px', fontWeight: '600', color: '#888', marginTop: '2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Bikramganj, Bihar</div>
+                            <div className="cl-logo-tag" style={{ marginTop: '1px', fontSize: '10px' }}>Genuine Parts • Best Rates</div>
                         </div>
                     </div>
 
@@ -76,17 +77,29 @@ const CustomerLayout = ({ children }) => {
                     {/* Actions */}
                     <div className="cl-actions">
                         {user && (
-                            <div className="cl-user-chip">
-                                <div className="cl-avatar">{user.name?.[0]?.toUpperCase()}</div>
-                                <span>{user.name?.split(' ')[0]}</span>
+                            <div className="cl-user-dropdown-wrap">
+                                <div className="cl-user-chip">
+                                    <div className="cl-avatar">{user.name?.[0]?.toUpperCase()}</div>
+                                    <span>{user.name?.split(' ')[0]}</span>
+                                    <div className="cl-dropdown-arrow">▼</div>
+                                </div>
+                                <div className="cl-user-dropdown">
+                                    <div className="cl-dropdown-header">
+                                        <strong>{user.name}</strong>
+                                        <span>{user.email}</span>
+                                    </div>
+                                    <button onClick={() => navigate('/customer/profile')}>👤 My Profile</button>
+                                    <button onClick={() => navigate('/customer/history')}>📋 My Bookings</button>
+                                    <button onClick={() => navigate('/customer/enquiry')}>💬 My Enquiries</button>
+                                    <div className="cl-dropdown-divider"></div>
+                                    <button className="cl-logout-btn" onClick={handleLogout}>🚪 Logout</button>
+                                </div>
                             </div>
                         )}
                         <div className="cl-cart-link" onClick={() => navigate('/customer/cart')}>
                             <div className="cl-cart-icon">🛒</div>
                             {cartCount > 0 && <span className="cl-cart-badge">{cartCount}</span>}
                         </div>
-                        <button className="cl-btn-outline" onClick={handleLogout}>🚪 Logout</button>
-
                     </div>
                 </div>
 
@@ -135,7 +148,7 @@ const CustomerLayout = ({ children }) => {
                     <div className="cl-footer-col">
                         <div className="cl-footer-logo">🔧 Satyam Motor Parts</div>
                         <p>India's trusted marketplace for genuine auto parts. Quality products, best prices.</p>
-                        <div className="cl-footer-phone">📞 +91 7257008160</div>
+                        <div className="cl-footer-phone">📞 +91-7257008160</div>
                     </div>
                     <div className="cl-footer-col">
                         <h4>Quick Links</h4>
@@ -160,8 +173,9 @@ const CustomerLayout = ({ children }) => {
                         <button className="cl-footer-link">FAQ</button>
                     </div>
                 </div>
-                <div className="cl-footer-bottom">
-                    <span>© 2024 Satyam Motor Parts. All rights reserved.</span>
+                <div className="cl-footer-bottom" style={{ flexDirection: 'column', gap: '5px', textAlign: 'center' }}>
+                    <span>© 2026 Satyam Motor Parts. All rights reserved.</span>
+                    <span style={{ fontSize: '12px', opacity: 0.8 }}>Built & Managed by Satyam Kumar</span>
                     <span>Made with ❤️ in India</span>
                 </div>
             </footer>
