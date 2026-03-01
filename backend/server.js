@@ -6,6 +6,7 @@ const path = require('path');
 const cors = require('cors');
 const connectDB = require('./config/db');
 connectDB();
+// Ignore non-API requests (important for manifest.json)
 
 // Create uploads folder if not exists (Skip on Vercel as it's read-only)
 if (!process.env.VERCEL) {
@@ -14,7 +15,13 @@ if (!process.env.VERCEL) {
         fs.mkdirSync(uploadDir);
     }
 }
-
+// Ignore non-API requests (important for manifest.json)
+app.use((req, res, next) => {
+    if (!req.url.startsWith('/api')) {
+        return next();
+    }
+    next();
+});
 const app = express();
 
 // Middleware — allow all origins in development
@@ -51,6 +58,8 @@ app.use((req, res, next) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
     next();
 });
+
+// Ignore non-API requests (important for manifest.json)
 
 
 // Routes
