@@ -178,7 +178,7 @@ const OwnerProducts = () => {
                                             <div style={{ width: 45, height: 45, borderRadius: 6, overflow: 'hidden', background: '#f8f8f8', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #eee' }}>
                                                 {p.image ? (
                                                     <img
-                                                        src={p.image.startsWith('/') ? `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${p.image}` : p.image}
+                                                        src={p.image.startsWith('/') ? `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'https://satyam-motor-parts.vercel.app'}${p.image}` : p.image}
                                                         alt=""
                                                         style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                                                     />
@@ -317,7 +317,7 @@ const OwnerProducts = () => {
                                 {form.image && (
                                     <div style={{ marginTop: 12, position: 'relative', width: 80, height: 80, borderRadius: 8, overflow: 'hidden', border: '1px solid #eee' }}>
                                         <img
-                                            src={form.image.startsWith('/') ? `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${form.image}` : form.image}
+                                            src={form.image.startsWith('/') ? `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'https://satyam-motor-parts.vercel.app'}${form.image}` : form.image}
                                             alt="Preview"
                                             style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#fdfdfd' }}
                                         />

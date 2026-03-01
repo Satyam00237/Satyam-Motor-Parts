@@ -366,17 +366,7 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* ── Promo Banner ── */}
-            <section className="promo-strip-section">
-                <div className="section-inner">
-                    <div className="promo-strip">
-                        <div className="promo-item">🎁 <span>Use code <strong>SAVE10</strong> for 10% off on your first order</span></div>
-                        <div className="promo-item">🚚 <span><strong>Free Shipping</strong> on orders above ₹499</span></div>
-                        <div className="promo-item">🔄 <span><strong>Easy Returns</strong> within 7 days</span></div>
-                        <div className="promo-item">🔒 <span><strong>Secure Payments</strong> via all major methods</span></div>
-                    </div>
-                </div>
-            </section>
+
 
             {/* ── Our Services ── */}
             <section className="section">

@@ -141,7 +141,7 @@ const Products = () => {
                                 <div key={p._id} className="cp-card">
                                     <div className="cp-card-img">
                                         {p.image
-                                            ? <img src={p.image.startsWith('/') ? `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${p.image}` : p.image} alt={p.name} />
+                                            ? <img src={p.image.startsWith('/') ? `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'https://satyam-motor-parts.vercel.app'}${p.image}` : p.image} alt={p.name} />
                                             : <span>{categoryEmoji[p.category] || '📦'}</span>
                                         }
                                         {p.discountPercentage > 0 && (
