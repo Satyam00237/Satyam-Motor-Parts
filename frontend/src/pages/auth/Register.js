@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
-import { FiUser, FiMail, FiLock, FiPhone, FiEye, FiEyeOff } from 'react-icons/fi';
+import { FiUser, FiMail, FiLock, FiPhone, FiEye, FiEyeOff, FiMapPin } from 'react-icons/fi';
 
 const Register = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
-    const [form, setForm] = useState({ name: '', email: '', password: '', phone: '' });
+    const [form, setForm] = useState({ name: '', email: '', password: '', phone: '', street: '', city: '', state: 'Rajasthan', zip: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [showPw, setShowPw] = useState(false);
@@ -65,8 +65,29 @@ const Register = () => {
                         <label>Phone Number</label>
                         <div style={{ position: 'relative' }}>
                             <FiPhone style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                            <input className="input" style={{ paddingLeft: 36 }} type="tel" name="phone" placeholder="10-digit phone number" value={form.phone} onChange={handleChange} />
+                            <input className="input" style={{ paddingLeft: 36 }} type="tel" name="phone" placeholder="10-digit phone number" value={form.phone} onChange={handleChange} required />
                         </div>
+                    </div>
+                    <div className="form-group">
+                        <label>Street Address</label>
+                        <div style={{ position: 'relative' }}>
+                            <FiMapPin style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                            <input className="input" style={{ paddingLeft: 36 }} type="text" name="street" placeholder="Street Address" value={form.street} onChange={handleChange} required />
+                        </div>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                        <div className="form-group">
+                            <label>City</label>
+                            <input className="input" type="text" name="city" placeholder="City" value={form.city} onChange={handleChange} required style={{ paddingLeft: 12 }} />
+                        </div>
+                        <div className="form-group">
+                            <label>State</label>
+                            <input className="input" type="text" name="state" placeholder="State" value={form.state} onChange={handleChange} required style={{ paddingLeft: 12 }} />
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <label>ZIP/Postal Code</label>
+                        <input className="input" type="text" name="zip" placeholder="ZIP Code" value={form.zip} onChange={handleChange} required style={{ paddingLeft: 12 }} />
                     </div>
                     <div className="form-group">
                         <label>Password</label>
