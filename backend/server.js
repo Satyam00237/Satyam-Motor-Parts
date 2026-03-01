@@ -76,6 +76,9 @@ app.use((req, res) => {
 
 // Error handler
 app.use((err, req, res, next) => {
+    console.error("\n\n=== GLOBAL ERROR HANDLER ===");
+    console.error(err);
+    console.error("============================\n");
     const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
     res.status(statusCode).json({
         message: err.message,
