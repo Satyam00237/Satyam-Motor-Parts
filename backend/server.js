@@ -16,12 +16,7 @@ if (!process.env.VERCEL) {
     }
 }
 // Ignore non-API requests (important for manifest.json)
-app.use((req, res, next) => {
-    if (!req.url.startsWith('/api')) {
-        return next();
-    }
-    next();
-});
+
 const app = express();
 
 // Middleware — allow all origins in development
