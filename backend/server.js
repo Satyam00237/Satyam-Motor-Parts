@@ -6,7 +6,6 @@ const path = require('path');
 const cors = require('cors');
 const connectDB = require('./config/db');
 connectDB();
-// Ignore non-API requests (important for manifest.json)
 
 // Create uploads folder if not exists (Skip on Vercel as it's read-only)
 if (!process.env.VERCEL) {
@@ -15,7 +14,7 @@ if (!process.env.VERCEL) {
         fs.mkdirSync(uploadDir);
     }
 }
-// Ignore non-API requests (important for manifest.json)
+
 
 const app = express();
 

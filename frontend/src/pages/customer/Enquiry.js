@@ -31,10 +31,10 @@ const Enquiry = () => {
         e.preventDefault();
         setError(''); setSuccessMsg(''); setLoading(true);
         try {
-            await api.post('/enquiries', form);
+            const res = await api.post('/enquiries', form);
             setSuccessMsg('✅ Enquiry submitted successfully!');
             setForm({ subject: '', type: 'general', message: '' });
-            fetchEnquiries();
+            setEnquiries(prev => [res.data, ...prev]);
         } catch (err) {
             setError(err.response?.data?.message || 'Failed to submit enquiry.');
         } finally {
@@ -47,9 +47,9 @@ const Enquiry = () => {
         if (!content || !content.trim()) return;
         setLoading(true);
         try {
-            await api.post(`/enquiries/${id}/reply`, { content });
+            const res = await api.post(`/enquiries/${id}/reply`, { content });
             setReplyContents({ ...replyContents, [id]: '' });
-            fetchEnquiries();
+            setEnquiries(prev => prev.map(eq => eq._id === id ? res.data : eq));
         } catch (err) {
             setError(err.response?.data?.message || 'Failed to send reply.');
         } finally {

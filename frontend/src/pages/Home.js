@@ -104,6 +104,13 @@ const Home = () => {
         return '/admin/enquiries';
     };
 
+    const getHistoryRoute = () => {
+        if (!user) return '/login';
+        if (user.role === 'customer') return '/customer/history';
+        if (user.role === 'owner') return '/owner/bookings';
+        return '/admin/bookings';
+    };
+
     const goToCategory = (cat) => navigate(getProductsRoute(cat.route));
 
     const goToService = (svc) => {
@@ -199,6 +206,7 @@ const Home = () => {
                             <button key={item} className="nav-link" onClick={() => goToCategory({ route: item === 'All Categories' ? null : item })}>{item}</button>
                         ))}
                         <button className="nav-link" onClick={() => navigate(getBookRoute())}>Book Service</button>
+                        <button className="nav-link" onClick={() => navigate(getHistoryRoute())}>My Bookings</button>
                         <button className="nav-link" onClick={() => navigate(getEnquiryRoute())}>Enquiry</button>
                     </div>
                 </nav>
@@ -433,41 +441,6 @@ const Home = () => {
                     </div>
                 </div>
             </section>
-
-            {/* ── Become a Seller ── */}
-            {!user && (
-                <section className="section section-alt seller-section">
-                    <div className="section-inner">
-                        <div className="seller-banner">
-                            <div className="seller-left">
-                                <div className="seller-badge">🏪 Partner with Us</div>
-                                <h2 className="seller-title">Become a Seller at Satyam Motor Parts</h2>
-                                <p className="seller-sub">Join our growing marketplace and reach thousands of customers. Start your selling journey today!</p>
-                                <div className="seller-perks">
-                                    <div className="seller-perk">✅ Earn more with competitive incentives</div>
-                                    <div className="seller-perk">✅ Reach thousands of customers</div>
-                                    <div className="seller-perk">✅ Easy to start selling</div>
-                                </div>
-                                <Link to="/register" className="seller-cta">Start Selling Today →</Link>
-                            </div>
-                            <div className="seller-stats">
-                                <div className="s-stat">
-                                    <strong>1000+</strong>
-                                    <span>Active Sellers</span>
-                                </div>
-                                <div className="s-stat">
-                                    <strong>50K+</strong>
-                                    <span>Products Listed</span>
-                                </div>
-                                <div className="s-stat">
-                                    <strong>₹50L+</strong>
-                                    <span>Monthly Sales</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            )}
 
             {/* ── Footer ── */}
             <footer className="home-footer">

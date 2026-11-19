@@ -16,7 +16,10 @@ const createEnquiry = async (req, res) => {
                 content: message,
             }],
         });
-        const populated = await enquiry.populate('customer', 'name email phone');
+        const populated = await enquiry.populate([
+            { path: 'customer', select: 'name email phone' },
+            { path: 'messages.sender', select: 'name role' }
+        ]);
         res.status(201).json(populated);
     } catch (error) {
         res.status(400).json({ message: error.message });
